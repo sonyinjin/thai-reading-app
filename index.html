@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ไม้บรรทัดสะกดคำ V.Ultimate (Fixed & Complete)</title>
+    <title>ไม้บรรทัดสะกดคำ V.Ultimate (Simple Voice)</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -11,7 +11,11 @@
             --mid-c: #FBC02D; --high-c: #0288D1; --low-c: #E91E63;
         }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; touch-action: manipulation; }
-        body { font-family: 'Sarabun', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; overflow: hidden; background: #f0f2f5; transition: 0.5s; }
+        body { 
+            font-family: 'Sarabun', 'Tahoma', sans-serif; 
+            margin: 0; display: flex; justify-content: center; align-items: center; 
+            height: 100vh; width: 100vw; overflow: hidden; background: #f0f2f5; 
+        }
         body.theme-forest { background: #E8F5E9; }
         body.theme-sky { background: #E1F5FE; }
         body.theme-candy { background: #FCE4EC; }
@@ -19,10 +23,8 @@
         .container { background: rgba(255, 255, 255, 0.95); padding: 10px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 98%; max-width: 800px; max-height: 98vh; display: flex; flex-direction: column; border: 4px solid #fff; }
         .display-zone { background: #fff; padding: 10px; border-radius: 20px; border: 2px solid #eee; margin-bottom: 8px; min-height: 160px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; flex-shrink: 0; cursor: pointer; }
         .word-result { font-size: clamp(65px, 18vw, 110px); font-weight: 700; line-height: 1.1; margin: 0; }
-        .c-con { color: var(--con-c); } .c-vow { color: var(--vow-c); } .c-tone { color: var(--tone-c); } .c-final { color: var(--final-c); }
         .read-text { font-size: clamp(18px, 4vw, 24px); color: #1e88e5; font-weight: bold; margin-top: 5px; }
         
-        /* แถบข้อมูลอักษรและแม่ตัวสะกด */
         .info-bar { display: flex; justify-content: center; gap: 8px; margin-top: 5px; }
         .info-tag { padding: 3px 10px; border-radius: 50px; font-size: 12px; font-weight: bold; color: white; }
         .tag-mid { background: var(--mid-c); color: #333; }
@@ -84,7 +86,7 @@
         <button class="btn-tool" onclick="toggleRuler('lead')">อักษรนำ</button>
         <button class="btn-tool" onclick="toggleRuler('cluster')">ควบกล้ำ</button>
         <button class="btn-tool btn-random" onclick="randomWord()">สุ่มคำ 🎲</button>
-        <button class="btn-tool btn-speak" onclick="startSpeak()">🔊 สะกดคำ (Google)</button>
+        <button class="btn-tool btn-speak" onclick="startSpeak()">🔊 สะกดคำ</button>
         <button class="btn-tool" onclick="changeTheme()">🎨 ธีม</button>
     </div>
 </div>
@@ -95,7 +97,7 @@
     const lowCons = ["ค","ง","ช","ซ","ท","น","พ","ฟ","ม","ย","ร","ล","ว","ฮ","ญ","ณ","ฑ","ฒ","ธ","ภ","ฬ","ฆ","ฌ"];
     const allCons = [...midCons, ...lowCons, ...highCons];
     
-    const fullNames = {"ก":"กอ","ข":"ขอ","ค":"คอ","ง":"งอ","จ":"จอ","ฉ":"ฉอ","ช":"ชอ","ซ":"ซอ","ท":"ทอ","น":"นอ","บ":"บอ","ป":"ปอ","ผ":"ผอ","ฝ":"ฝอ","พ":"พอ","ฟ":"ฟอ","ม":"มอ","ย":"ยอ","ร":"รอ","ล":"ลอ","ว":"วอ","ส":"สอ","ห":"หอ","อ":"ออ","ฮ":"ฮอ"};
+    const fullNames = {"ก":"กอ","ข":"ขอ","ค":"คอ","ง":"งอ","จ":"จอ","ฉ":"ฉอ","ช":"ชอ","ซ":"ซอ","ท":"ทอ","น":"นอ","บ":"บอ","ป":"ปอ","ผ":"ผอ","ฝ":"ฝอ","พ":"พอ","ฟ":"ฟอ","ม":"มอ","ย":"ยอ","ร":"รอ","ล":"ลอ","ว":"วอ","ส":"สอ","ห":"หอ","อ":"ออ","ฮ":"ฮอ","ฎ":"ดอ","ฏ":"ตอ","ฐ":"ถอ","ฑ":"ทอ","ฒ":"ทอ","ณ":"นอ","ธ":"ทอ","ภ":"พอ","ศ":"สอ","ษ":"สอ","ฬ":"ลอ","ญ":"ยอ","ฆ":"คอ","ฌ":"ชอ"};
     const soundsMap = {"-ะ":"อะ","-า":"อา","-ิ":"อิ","-ี":"อี","-ึ":"อึ","-ื":"อือ","-ุ":"อุ","-ู":"อู","เ-ะ":"เอะ","เ-":"เอ","แ-ะ":"แอะ","แ-":"แอ","โ-ะ":"โอะ","โ-":"โอ","เ-าะ":"เอาะ","-อ":"ออ","เ-อะ":"เออะ","เ-อ":"เออ","เ-า":"เอา","-ำ":"อำ","เ-ีย":"เอีย","เ-ือ":"เอือ","-ัว":"อัว"};
     const finalGroups = {"ก":"แม่กก","ง":"แม่กง","ด":"แม่กด","น":"แม่กน","บ":"แม่กบ","ม":"แม่กม","ย":"แม่เกย","ว":"แม่เกอว"};
     const toneNames = {"่": "ไม้เอก", "้": "ไม้โท", "๊": "ไม้ตรี", "๋": "ไม้จัตวา"};
@@ -134,13 +136,6 @@
             d.textContent = i==="" ? (type==='tone'?'○':'-') : i;
             p.appendChild(d);
         });
-    }
-
-    // เรียกเสียงจาก Google Translate API
-    function speakGoogle(text) {
-        if (!text) return;
-        const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=th&client=tw-ob`;
-        new Audio(url).play().catch(() => console.log("คลิกหน้าจอก่อนเล่นเสียง"));
     }
 
     function setupScroll(id, type, list) {
@@ -198,15 +193,15 @@
         document.getElementById('resDiv').innerText = res;
         
         let r = [];
-        if(lead) r.push(fullNames[lead] || lead + "อ");
-        r.push(fullNames[con] || con + "อ");
-        if(cluster) r.push(fullNames[cluster] || cluster + "อ");
-        r.push((soundsMap[vow] || "สระ").replace("สระ",""));
-        if(final) r.push(fullNames[final] || final + "อ");
+        if(lead) r.push(fullNames[lead] || lead);
+        r.push(fullNames[con] || con);
+        if(cluster) r.push(fullNames[cluster] || cluster);
+        r.push((soundsMap[vow] || "").replace("สระ",""));
+        if(final) r.push(fullNames[final] || final);
         if(tone) r.push(toneNames[tone] || "");
+        
         document.getElementById('readDiv').textContent = r.filter(x => x !== "").join("-") + " = " + res;
 
-        // อัปเดตหมู่พยัญชนะและแม่ตัวสะกด
         let infoHtml = "";
         if(midCons.includes(con)) infoHtml += `<span class="info-tag tag-mid">อักษรกลาง</span>`;
         else if(highCons.includes(con)) infoHtml += `<span class="info-tag tag-high">อักษรสูง</span>`;
@@ -215,6 +210,25 @@
         if(final) infoHtml += `<span class="info-tag tag-final">${finalGroups[final] || 'แม่ '+final}</span>`;
         else infoHtml += `<span class="info-tag" style="background:#ccc; color:#666;">แม่ ก.กา</span>`;
         document.getElementById('infoBar').innerHTML = infoHtml;
+    }
+
+    function startSpeak() {
+        let { lead, con, cluster, vow, final, tone } = cur;
+        let word = document.getElementById('resDiv').innerText;
+        
+        let spellArr = [];
+        if(lead) spellArr.push(fullNames[lead] || lead);
+        spellArr.push(fullNames[con] || con);
+        if(cluster) spellArr.push(fullNames[cluster] || cluster);
+        spellArr.push((soundsMap[vow] || "").replace("สระ",""));
+        if(final) spellArr.push(fullNames[final] || final);
+        if(tone) spellArr.push(toneNames[tone] || "");
+
+        // อ่านแค่ กอ-อา-กา หรือ กอ-อา-นอ-กาน (ไม่มีคำว่า อ่านว่า)
+        let finalSpeech = spellArr.filter(x => x !== "").join("-") + " " + word;
+        
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(finalSpeech)}&tl=th&client=tw-ob`;
+        new Audio(url).play().catch(() => console.log("แตะหน้าจอก่อนเล่นเสียง"));
     }
 
     function toggleRuler(t) {
@@ -236,29 +250,6 @@
         cur.tone = ["", "่", "้", "๊", "๋"][Math.floor(Math.random()*5)];
         updateUI();
         startSpeak();
-    }
-
-    function startSpeak() {
-        let { lead, con, cluster, vow, final, tone } = cur;
-        let word = document.getElementById('resDiv').innerText;
-        
-        let spell = (lead ? (fullNames[lead] || lead + "อ") + " " : "") + 
-                    (fullNames[con] || con + "อ") + " " + 
-                    (cluster ? (fullNames[cluster] || cluster + "อ") + " " : "") + 
-                    (soundsMap[vow] || "สระ");
-        
-        if(final) spell += " " + (fullNames[final] || final + "อ");
-
-        let baseNoTone = document.getElementById('resDiv').innerText.replace(tone, "");
-        let fullSpell = spell + ", " + baseNoTone;
-        
-        if(tone && toneNames[tone]) {
-            fullSpell += ", " + toneNames[tone] + ", " + word;
-        } else {
-            fullSpell += ", อ่านว่า " + word;
-        }
-
-        speakGoogle(fullSpell);
     }
 
     init();
