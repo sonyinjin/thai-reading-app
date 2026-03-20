@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ไม้บรรทัดสะกดคำ V.Ultimate (Simple Voice)</title>
+    <title>ไม้บรรทัดสะกดคำ V.Ultimate (Fixed)</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,17 +12,16 @@
         }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; touch-action: manipulation; }
         body { 
-            font-family: 'Sarabun', 'Tahoma', sans-serif; 
+            font-family: 'Sarabun', 'Leelawadee UI', 'Tahoma', sans-serif; 
             margin: 0; display: flex; justify-content: center; align-items: center; 
             height: 100vh; width: 100vw; overflow: hidden; background: #f0f2f5; 
         }
-        body.theme-forest { background: #E8F5E9; }
-        body.theme-sky { background: #E1F5FE; }
-        body.theme-candy { background: #FCE4EC; }
-
+        /* แก้ปัญหาสระสี่เหลี่ยมด้วยการบังคับฟอนต์สำรองของระบบไทย */
+        .word-result, .item, .read-text { font-family: 'Sarabun', 'Leelawadee UI', sans-serif !important; }
+        
         .container { background: rgba(255, 255, 255, 0.95); padding: 10px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 98%; max-width: 800px; max-height: 98vh; display: flex; flex-direction: column; border: 4px solid #fff; }
         .display-zone { background: #fff; padding: 10px; border-radius: 20px; border: 2px solid #eee; margin-bottom: 8px; min-height: 160px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; flex-shrink: 0; cursor: pointer; }
-        .word-result { font-size: clamp(65px, 18vw, 110px); font-weight: 700; line-height: 1.1; margin: 0; }
+        .word-result { font-size: clamp(65px, 18vw, 110px); font-weight: 700; line-height: 1.1; margin: 0; min-height: 120px; display: flex; align-items: center; }
         .read-text { font-size: clamp(18px, 4vw, 24px); color: #1e88e5; font-weight: bold; margin-top: 5px; }
         
         .info-bar { display: flex; justify-content: center; gap: 8px; margin-top: 5px; }
@@ -36,12 +35,12 @@
         .label-header { font-size: 14px; color: #333; text-align: center; flex: 1; font-weight: 700; padding: 8px 0; }
         .label-header.hidden { display: none; }
 
-        .ruler-outer { display: flex; justify-content: space-between; flex-grow: 1; height: 40vh; min-height: 200px; background: #2c3e50; border-radius: 20px; padding: 5px; position: relative; gap: 3px; }
+        .ruler-outer { display: flex; justify-content: space-between; flex-grow: 1; height: 35vh; min-height: 200px; background: #2c3e50; border-radius: 20px; padding: 5px; position: relative; gap: 3px; }
         .guide-line { position: absolute; top: 50%; left: 5px; right: 5px; height: 65px; transform: translateY(-50%); background: rgba(255,255,255,0.12); border-radius: 12px; z-index: 1; pointer-events: none; border: 1px solid rgba(255,255,255,0.2); }
         .ruler { width: 20%; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; z-index: 2; }
-        .ruler.hidden { width: 0; opacity: 0; pointer-events: none; }
+        .ruler.hidden { width: 0 !important; opacity: 0; pointer-events: none; flex: 0; margin: 0; }
         .ruler::-webkit-scrollbar { display: none; }
-        .ruler-content { padding-top: calc(20vh - 32px); padding-bottom: calc(20vh - 32px); }
+        .ruler-content { padding-top: calc(17.5vh - 32px); padding-bottom: calc(17.5vh - 32px); }
 
         .item { height: 65px; display: flex; align-items: center; justify-content: center; font-size: 30px; color: #7f8c8d; scroll-snap-align: center; transition: 0.2s; }
         .item.active { color: #fff; font-size: 48px; font-weight: bold; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
@@ -51,6 +50,7 @@
         .btn-random { background: #FF9800; color: white; border-color: #F57C00; }
         .btn-speak { background: #2196F3; color: white; border-color: #0D47A1; flex-grow: 1; max-width: 200px; }
 
+        .theme-forest { background: #E8F5E9; } .theme-sky { background: #E1F5FE; } .theme-candy { background: #FCE4EC; }
         .mid { color: var(--mid-c) !important; } .high { color: var(--high-c) !important; } .low { color: var(--low-c) !important; }
     </style>
 </head>
@@ -97,7 +97,7 @@
     const lowCons = ["ค","ง","ช","ซ","ท","น","พ","ฟ","ม","ย","ร","ล","ว","ฮ","ญ","ณ","ฑ","ฒ","ธ","ภ","ฬ","ฆ","ฌ"];
     const allCons = [...midCons, ...lowCons, ...highCons];
     
-    const fullNames = {"ก":"กอ","ข":"ขอ","ค":"คอ","ง":"งอ","จ":"จอ","ฉ":"ฉอ","ช":"ชอ","ซ":"ซอ","ท":"ทอ","น":"นอ","บ":"บอ","ป":"ปอ","ผ":"ผอ","ฝ":"ฝอ","พ":"พอ","ฟ":"ฟอ","ม":"มอ","ย":"ยอ","ร":"รอ","ล":"ลอ","ว":"วอ","ส":"สอ","ห":"หอ","อ":"ออ","ฮ":"ฮอ","ฎ":"ดอ","ฏ":"ตอ","ฐ":"ถอ","ฑ":"ทอ","ฒ":"ทอ","ณ":"นอ","ธ":"ทอ","ภ":"พอ","ศ":"สอ","ษ":"สอ","ฬ":"ลอ","ญ":"ยอ","ฆ":"คอ","ฌ":"ชอ"};
+    const fullNames = {"ก":"กอ","ข":"ขอ","ค":"คอ","ง":"งอ","จ":"จอ","ฉ":"ฉอ","ช":"ชอ","ซ":"ซอ","ท":"ทอ","น":"นอ","บ":"บอ","ป":"ปอ","ผ":"ผอ","ฝ":"ฝอ","พ":"พอ","ฟ":"ฟอ","ม":"มอ","ย":"ยอ","ร":"รอ","ล":"ลอ","ว":"วอ","ส":"สอ","ห":"หอ","อ":"ออ","ฮ":"ฮอ"};
     const soundsMap = {"-ะ":"อะ","-า":"อา","-ิ":"อิ","-ี":"อี","-ึ":"อึ","-ื":"อือ","-ุ":"อุ","-ู":"อู","เ-ะ":"เอะ","เ-":"เอ","แ-ะ":"แอะ","แ-":"แอ","โ-ะ":"โอะ","โ-":"โอ","เ-าะ":"เอาะ","-อ":"ออ","เ-อะ":"เออะ","เ-อ":"เออ","เ-า":"เอา","-ำ":"อำ","เ-ีย":"เอีย","เ-ือ":"เอือ","-ัว":"อัว"};
     const finalGroups = {"ก":"แม่กก","ง":"แม่กง","ด":"แม่กด","น":"แม่กน","บ":"แม่กบ","ม":"แม่กม","ย":"แม่เกย","ว":"แม่เกอว"};
     const toneNames = {"่": "ไม้เอก", "้": "ไม้โท", "๊": "ไม้ตรี", "๋": "ไม้จัตวา"};
@@ -199,7 +199,6 @@
         r.push((soundsMap[vow] || "").replace("สระ",""));
         if(final) r.push(fullNames[final] || final);
         if(tone) r.push(toneNames[tone] || "");
-        
         document.getElementById('readDiv').textContent = r.filter(x => x !== "").join("-") + " = " + res;
 
         let infoHtml = "";
@@ -212,6 +211,7 @@
         document.getElementById('infoBar').innerHTML = infoHtml;
     }
 
+    // แก้ไขระบบเสียง: ใช้ Web Speech API แทน Google Translate (เสถียรกว่าเมื่อขึ้น GitHub)
     function startSpeak() {
         let { lead, con, cluster, vow, final, tone } = cur;
         let word = document.getElementById('resDiv').innerText;
@@ -224,11 +224,15 @@
         if(final) spellArr.push(fullNames[final] || final);
         if(tone) spellArr.push(toneNames[tone] || "");
 
-        // อ่านแค่ กอ-อา-กา หรือ กอ-อา-นอ-กาน (ไม่มีคำว่า อ่านว่า)
+        // กอ-อา-กา (ตามที่คุณต้องการ)
         let finalSpeech = spellArr.filter(x => x !== "").join("-") + " " + word;
         
-        const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(finalSpeech)}&tl=th&client=tw-ob`;
-        new Audio(url).play().catch(() => console.log("แตะหน้าจอก่อนเล่นเสียง"));
+        // ใช้ฟีเจอร์เสียงในเครื่องโทรศัพท์
+        window.speechSynthesis.cancel(); 
+        const msg = new SpeechSynthesisUtterance(finalSpeech);
+        msg.lang = 'th-TH';
+        msg.rate = 0.8; 
+        window.speechSynthesis.speak(msg);
     }
 
     function toggleRuler(t) {
