@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ไม้บรรทัดสะกดคำ V.Ultimate (Fixed & Complete)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --con-c: #333; --vow-c: #1976D2; --tone-c: #D32F2F; --final-c: #388E3C;
+            --mid-c: #FBC02D; --high-c: #0288D1; --low-c: #E91E63;
+        }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; touch-action: manipulation; }
+        body { font-family: 'Sarabun', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; overflow: hidden; background: #f0f2f5; transition: 0.5s; }
+        body.theme-forest { background: #E8F5E9; }
+        body.theme-sky { background: #E1F5FE; }
+        body.theme-candy { background: #FCE4EC; }
+
+        .container { background: rgba(255, 255, 255, 0.95); padding: 10px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 98%; max-width: 800px; max-height: 98vh; display: flex; flex-direction: column; border: 4px solid #fff; }
+        .display-zone { background: #fff; padding: 10px; border-radius: 20px; border: 2px solid #eee; margin-bottom: 8px; min-height: 160px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; flex-shrink: 0; cursor: pointer; }
+        .word-result { font-size: clamp(65px, 18vw, 110px); font-weight: 700; line-height: 1.1; margin: 0; }
+        .c-con { color: var(--con-c); } .c-vow { color: var(--vow-c); } .c-tone { color: var(--tone-c); } .c-final { color: var(--final-c); }
+        .read-text { font-size: clamp(18px, 4vw, 24px); color: #1e88e5; font-weight: bold; margin-top: 5px; }
+        
+        /* แถบข้อมูลอักษรและแม่ตัวสะกด */
+        .info-bar { display: flex; justify-content: center; gap: 8px; margin-top: 5px; }
+        .info-tag { padding: 3px 10px; border-radius: 50px; font-size: 12px; font-weight: bold; color: white; }
+        .tag-mid { background: var(--mid-c); color: #333; }
+        .tag-high { background: var(--high-c); }
+        .tag-low { background: var(--low-c); }
+        .tag-final { background: var(--final-c); }
+
+        .header-bar { display: flex; justify-content: space-around; background: rgba(0,0,0,0.03); border-radius: 10px; margin-bottom: 4px; }
+        .label-header { font-size: 14px; color: #333; text-align: center; flex: 1; font-weight: 700; padding: 8px 0; }
+        .label-header.hidden { display: none; }
+
+        .ruler-outer { display: flex; justify-content: space-between; flex-grow: 1; height: 40vh; min-height: 200px; background: #2c3e50; border-radius: 20px; padding: 5px; position: relative; gap: 3px; }
+        .guide-line { position: absolute; top: 50%; left: 5px; right: 5px; height: 65px; transform: translateY(-50%); background: rgba(255,255,255,0.12); border-radius: 12px; z-index: 1; pointer-events: none; border: 1px solid rgba(255,255,255,0.2); }
+        .ruler { width: 20%; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; z-index: 2; }
+        .ruler.hidden { width: 0; opacity: 0; pointer-events: none; }
+        .ruler::-webkit-scrollbar { display: none; }
+        .ruler-content { padding-top: calc(20vh - 32px); padding-bottom: calc(20vh - 32px); }
+
+        .item { height: 65px; display: flex; align-items: center; justify-content: center; font-size: 30px; color: #7f8c8d; scroll-snap-align: center; transition: 0.2s; }
+        .item.active { color: #fff; font-size: 48px; font-weight: bold; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+
+        .bottom-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 10px; padding-bottom: 5px; }
+        .btn-tool { padding: 10px 14px; border-radius: 15px; border: 1px solid #ddd; background: #fff; font-size: 13px; cursor: pointer; font-weight: bold; }
+        .btn-random { background: #FF9800; color: white; border-color: #F57C00; }
+        .btn-speak { background: #2196F3; color: white; border-color: #0D47A1; flex-grow: 1; max-width: 200px; }
+
+        .mid { color: var(--mid-c) !important; } .high { color: var(--high-c) !important; } .low { color: var(--low-c) !important; }
+    </style>
+</head>
+<body class="theme-sky">
+
+<div class="container">
+    <div class="display-zone" onclick="startSpeak()">
+        <div id="resDiv" class="word-result"></div>
+        <div id="readDiv" class="read-text"></div>
+        <div class="info-bar" id="infoBar"></div>
+    </div>
+
+    <div class="header-bar">
+        <div id="head-lead" class="label-header hidden">อักษรนำ</div>
+        <div id="head-con" class="label-header">พยัญชนะ</div>
+        <div id="head-cluster" class="label-header hidden">ควบกล้ำ</div>
+        <div id="head-vow" class="label-header">สระ</div>
+        <div id="head-final" class="label-header">ตัวสะกด</div>
+        <div id="head-tone" class="label-header">วรรณยุกต์</div>
+    </div>
+
+    <div class="ruler-outer">
+        <div class="guide-line"></div>
+        <div id="leadRuler" class="ruler hidden"><div id="leadList" class="ruler-content"></div></div>
+        <div id="conRuler" class="ruler"><div id="conList" class="ruler-content"></div></div>
+        <div id="clusterRuler" class="ruler hidden"><div id="clusterList" class="ruler-content"></div></div>
+        <div id="vowRuler" class="ruler"><div id="vowList" class="ruler-content"></div></div>
+        <div id="finalRuler" class="ruler"><div id="finalList" class="ruler-content"></div></div>
+        <div id="toneRuler" class="ruler"><div id="toneList" class="ruler-content"></div></div>
+    </div>
+
+    <div class="bottom-menu">
+        <button class="btn-tool" onclick="toggleRuler('lead')">อักษรนำ</button>
+        <button class="btn-tool" onclick="toggleRuler('cluster')">ควบกล้ำ</button>
+        <button class="btn-tool btn-random" onclick="randomWord()">สุ่มคำ 🎲</button>
+        <button class="btn-tool btn-speak" onclick="startSpeak()">🔊 สะกดคำ (Google)</button>
+        <button class="btn-tool" onclick="changeTheme()">🎨 ธีม</button>
+    </div>
+</div>
+
+<script>
+    const midCons = ["ก","จ","ด","ต","บ","ป","อ","ฎ","ฏ"];
+    const highCons = ["ข","ฉ","ถ","ผ","ฝ","ส","ห","ศ","ษ","ฐ"];
+    const lowCons = ["ค","ง","ช","ซ","ท","น","พ","ฟ","ม","ย","ร","ล","ว","ฮ","ญ","ณ","ฑ","ฒ","ธ","ภ","ฬ","ฆ","ฌ"];
+    const allCons = [...midCons, ...lowCons, ...highCons];
+    
+    const fullNames = {"ก":"กอ","ข":"ขอ","ค":"คอ","ง":"งอ","จ":"จอ","ฉ":"ฉอ","ช":"ชอ","ซ":"ซอ","ท":"ทอ","น":"นอ","บ":"บอ","ป":"ปอ","ผ":"ผอ","ฝ":"ฝอ","พ":"พอ","ฟ":"ฟอ","ม":"มอ","ย":"ยอ","ร":"รอ","ล":"ลอ","ว":"วอ","ส":"สอ","ห":"หอ","อ":"ออ","ฮ":"ฮอ"};
+    const soundsMap = {"-ะ":"อะ","-า":"อา","-ิ":"อิ","-ี":"อี","-ึ":"อึ","-ื":"อือ","-ุ":"อุ","-ู":"อู","เ-ะ":"เอะ","เ-":"เอ","แ-ะ":"แอะ","แ-":"แอ","โ-ะ":"โอะ","โ-":"โอ","เ-าะ":"เอาะ","-อ":"ออ","เ-อะ":"เออะ","เ-อ":"เออ","เ-า":"เอา","-ำ":"อำ","เ-ีย":"เอีย","เ-ือ":"เอือ","-ัว":"อัว"};
+    const finalGroups = {"ก":"แม่กก","ง":"แม่กง","ด":"แม่กด","น":"แม่กน","บ":"แม่กบ","ม":"แม่กม","ย":"แม่เกย","ว":"แม่เกอว"};
+    const toneNames = {"่": "ไม้เอก", "้": "ไม้โท", "๊": "ไม้ตรี", "๋": "ไม้จัตวา"};
+    
+    let cur = { lead: "", con: "ก", cluster: "", vow: "-ะ", final: "", tone: "" };
+    let scrollTimers = {};
+
+    function init() {
+        renderList('leadList', ["", "ห", "อ"], 'lead');
+        const conList = document.getElementById('conList');
+        allCons.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'item ' + (midCons.includes(c)?'mid':highCons.includes(c)?'high':'low');
+            div.textContent = c;
+            conList.appendChild(div);
+        });
+        renderList('clusterList', ["", "ร", "ล", "ว"], 'cluster');
+        renderList('vowList', Object.keys(soundsMap), 'vow');
+        renderList('finalList', ["","ก","ง","ด","น","บ","ม","ย","ว"], 'final');
+        renderList('toneList', ["", "่", "้", "๊", "๋"], 'tone');
+        
+        setupScroll('leadRuler', 'lead', ["", "ห", "อ"]);
+        setupScroll('conRuler', 'con', allCons);
+        setupScroll('clusterRuler', 'cluster', ["", "ร", "ล", "ว"]);
+        setupScroll('vowRuler', 'vow', Object.keys(soundsMap));
+        setupScroll('finalRuler', 'final', ["","ก","ง","ด","น","บ","ม","ย","ว"]);
+        setupScroll('toneRuler', 'tone', ["", "่", "้", "๊", "๋"]);
+        updateUI();
+    }
+
+    function renderList(id, list, type) {
+        const p = document.getElementById(id);
+        list.forEach(i => {
+            const d = document.createElement('div');
+            d.className = 'item';
+            d.textContent = i==="" ? (type==='tone'?'○':'-') : i;
+            p.appendChild(d);
+        });
+    }
+
+    // เรียกเสียงจาก Google Translate API
+    function speakGoogle(text) {
+        if (!text) return;
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=th&client=tw-ob`;
+        new Audio(url).play().catch(() => console.log("คลิกหน้าจอก่อนเล่นเสียง"));
+    }
+
+    function setupScroll(id, type, list) {
+        const el = document.getElementById(id);
+        el.onscroll = () => {
+            clearTimeout(scrollTimers[id]);
+            scrollTimers[id] = setTimeout(() => {
+                const rect = el.getBoundingClientRect();
+                const center = rect.top + (rect.height / 2);
+                let min = Infinity, idx = 0;
+                const items = el.getElementsByClassName('item');
+                Array.from(items).forEach((it, i) => {
+                    const itCenter = it.getBoundingClientRect().top + 32;
+                    const diff = Math.abs(center - itCenter);
+                    it.classList.remove('active');
+                    if (diff < min) { min = diff; idx = i; }
+                });
+                if (cur[type] !== list[idx]) {
+                    items[idx].classList.add('active');
+                    cur[type] = list[idx];
+                    updateUI();
+                }
+            }, 80);
+        };
+    }
+
+    function updateUI() {
+        let { lead, con, cluster, vow, final, tone } = cur;
+        let baseCon = lead + con + cluster;
+        let res = "";
+
+        if (final !== "") {
+            if (vow === "-ะ") res = baseCon + "ั" + final;
+            else if (vow === "เ-ะ") res = "เ" + baseCon + "็" + final;
+            else if (vow === "แ-ะ") res = "แ" + baseCon + "็" + final;
+            else if (vow === "โ-ะ") res = baseCon + final;
+            else if (vow === "เ-อ") {
+                if (final === "ย") res = "เ" + baseCon + "ย"; else res = "เ" + baseCon + "ิ" + final;
+            }
+            else if (vow === "-ัว") res = baseCon + "ว" + final;
+            else if (vow === "-อ" && final === "ร") res = baseCon + final;
+            else res = vow.replace('-', baseCon) + final;
+        } else {
+            res = vow.replace('-', baseCon);
+            if (vow === "-ื") res = baseCon + "ือ";
+        }
+
+        if (tone !== "") {
+            let pos = (lead !== "" || cluster !== "") ? 2 : 1;
+            const upper = ["ั", "ิ", "ี", "ึ", "ื", "็"];
+            if (upper.includes(res[pos])) res = res.slice(0, pos+1) + tone + res.slice(pos+1);
+            else res = res.slice(0, pos) + tone + res.slice(pos);
+        }
+
+        document.getElementById('resDiv').innerText = res;
+        
+        let r = [];
+        if(lead) r.push(fullNames[lead] || lead + "อ");
+        r.push(fullNames[con] || con + "อ");
+        if(cluster) r.push(fullNames[cluster] || cluster + "อ");
+        r.push((soundsMap[vow] || "สระ").replace("สระ",""));
+        if(final) r.push(fullNames[final] || final + "อ");
+        if(tone) r.push(toneNames[tone] || "");
+        document.getElementById('readDiv').textContent = r.filter(x => x !== "").join("-") + " = " + res;
+
+        // อัปเดตหมู่พยัญชนะและแม่ตัวสะกด
+        let infoHtml = "";
+        if(midCons.includes(con)) infoHtml += `<span class="info-tag tag-mid">อักษรกลาง</span>`;
+        else if(highCons.includes(con)) infoHtml += `<span class="info-tag tag-high">อักษรสูง</span>`;
+        else infoHtml += `<span class="info-tag tag-low">อักษรต่ำ</span>`;
+        
+        if(final) infoHtml += `<span class="info-tag tag-final">${finalGroups[final] || 'แม่ '+final}</span>`;
+        else infoHtml += `<span class="info-tag" style="background:#ccc; color:#666;">แม่ ก.กา</span>`;
+        document.getElementById('infoBar').innerHTML = infoHtml;
+    }
+
+    function toggleRuler(t) {
+        document.getElementById(t+'Ruler').classList.toggle('hidden');
+        document.getElementById('head-'+t).classList.toggle('hidden');
+        if(document.getElementById(t+'Ruler').classList.contains('hidden')) cur[t] = "";
+        updateUI();
+    }
+
+    function changeTheme() {
+        const themes = ["theme-sky", "theme-forest", "theme-candy"];
+        document.body.className = themes[(themes.indexOf(document.body.className)+1)%3];
+    }
+
+    function randomWord() {
+        cur.con = allCons[Math.floor(Math.random()*allCons.length)];
+        cur.vow = Object.keys(soundsMap)[Math.floor(Math.random()*Object.keys(soundsMap).length)];
+        cur.final = ["","ก","ง","ด","น","บ","ม","ย","ว"][Math.floor(Math.random()*9)];
+        cur.tone = ["", "่", "้", "๊", "๋"][Math.floor(Math.random()*5)];
+        updateUI();
+        startSpeak();
+    }
+
+    function startSpeak() {
+        let { lead, con, cluster, vow, final, tone } = cur;
+        let word = document.getElementById('resDiv').innerText;
+        
+        let spell = (lead ? (fullNames[lead] || lead + "อ") + " " : "") + 
+                    (fullNames[con] || con + "อ") + " " + 
+                    (cluster ? (fullNames[cluster] || cluster + "อ") + " " : "") + 
+                    (soundsMap[vow] || "สระ");
+        
+        if(final) spell += " " + (fullNames[final] || final + "อ");
+
+        let baseNoTone = document.getElementById('resDiv').innerText.replace(tone, "");
+        let fullSpell = spell + ", " + baseNoTone;
+        
+        if(tone && toneNames[tone]) {
+            fullSpell += ", " + toneNames[tone] + ", " + word;
+        } else {
+            fullSpell += ", อ่านว่า " + word;
+        }
+
+        speakGoogle(fullSpell);
+    }
+
+    init();
+</script>
+</body>
+</html>
